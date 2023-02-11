@@ -32,3 +32,6 @@ module.exports = (sequelize) => {
   {timestamps: false}
   );
 };
+
+
+//probando el git push
