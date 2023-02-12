@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
     steps: {
       type: DataTypes.STRING
     },
-    created:{
+    createdInDb:{
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
@@ -33,5 +33,3 @@ module.exports = (sequelize) => {
   );
 };
 
-
-//probando el git push
