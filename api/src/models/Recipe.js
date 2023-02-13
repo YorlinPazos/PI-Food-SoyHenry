@@ -14,19 +14,22 @@ module.exports = (sequelize) => {
       primaryKey: true
        },
     summary: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     healthScore:{
       type: DataTypes.INTEGER
     },
     steps: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
-    createdInDb:{
+    createdInDb: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
+    },
+    image: {
+      type: DataTypes.STRING
     },
   },
   {timestamps: false}
