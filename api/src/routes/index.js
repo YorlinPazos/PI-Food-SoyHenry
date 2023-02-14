@@ -4,14 +4,14 @@ const router = Router();
 // Ejemplo: const authRouter = require('./auth.js');
 
 const recipeRoutes = require("./recipes")
-const dietRoutes = require("./diet")
+const dietRoutes = require("./diets")
 
 
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
 
 router.use("/recipes", recipeRoutes);
-router.use("/diet", dietRoutes);
+router.use("/diets", dietRoutes);
 
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const dietController = require('../controllers/diet');
+const dietController = require('../controllers/diets');
 const {Router} = require('express');
 const router = Router();
 
