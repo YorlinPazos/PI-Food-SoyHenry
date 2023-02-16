@@ -2,11 +2,40 @@ const ModelCrud = require("./index");
 const axios = require('axios');
 const { Recipe, Diet } = require('../db');
 const { API_KEY } = process.env;
-const { Op } = require('sequelize')
+const { Op  } = require('sequelize')
 
 class RecipeModel extends ModelCrud{
     constructor(model){
         super(model)
+    }
+
+    getById = async (req, res, next) =>{
+        const id = req.params.id; 
+        try {
+
+            if(isNaN(id)){
+                let recipeIdBd = await this.model.findOne({
+                    attributes: ['id', 'name', 'image', ],
+                    where: {
+                        id: id
+                    },
+                    include: [{
+                        model: Diet,
+                        attributes: ['name'],
+                        through:{
+                            attributes: []
+                        }
+                    }]
+                })
+                if(recipeIdBd.length > 0){
+                    return res.send(recipeIdBd)
+                }else{
+                    res.status(404).send('La receta no existe en la base de datos')
+                }
+            }
+        } catch (error) {
+            next(error)
+        }
     }
 
     getAll = async (req, res, next) =>{
@@ -21,14 +50,17 @@ class RecipeModel extends ModelCrud{
                         }, 
                     },
                     include: [{
-                        model: Diet                      //Aquí vinculo mis diets a mi búsqueda por query
+                        model: Diet,
+                        attributes: ['name'],
+                           //Aquí vinculo mis diets a mi búsqueda por query
                 }] 
                 })
+                
                 let mapClear = queryBdd.map(el => {
                     return{
                         id: el.id,
                         name: el.name,
-                        diets: el.diets.map(diet => diet.name).join(', ')
+                        diets: el.diets.map(el => el.name).join(', ')
                     }
                 })
                 let results = [...mapClear]
@@ -43,7 +75,7 @@ class RecipeModel extends ModelCrud{
                         diets: el.diets.map(el => el).join(', ')
                     }
                 })
-                results =[...queryBdd, mapClearApiArray]
+                results =[...mapClear, mapClearApiArray]
                 res.status(200).send(results)
             } catch (error) {
                 next(error)
@@ -56,6 +88,7 @@ class RecipeModel extends ModelCrud{
 
         if(!req.body.name ) return res.status(400).json({message: 'El campo >| name |< es obligatorio'})
         if(!req.body.summary ) return res.status(400).json({message: 'El campo >| summary |< es obligatorio'})
+        if(typeof req.body.healthScore != 'number' ) return res.status(400).json({message: 'El campo >| healthScore |< debería ser un número'})
 
         try {
             let createRecipe = await this.model.create({
