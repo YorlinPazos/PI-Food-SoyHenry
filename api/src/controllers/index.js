@@ -22,7 +22,7 @@ class ModelCrud {
     post = (req, res, next) => {
         const body = req.body
         return this.model.create({
-            ...body,
+            ...body, 
             id: uuidv4()
         })
             .then((createdElement)=> res.send(createdElement))

@@ -7,12 +7,13 @@ const { Op  } = require('sequelize')
 class RecipeModel extends ModelCrud{
     constructor(model){
         super(model)
-    }
+    }                                   // By ID
 
     getById = async (req, res, next) =>{
+       
         const id = req.params.id; 
-        try {
 
+        try {
             if(isNaN(id)){
                 let recipeIdBd = await this.model.findOne({
                     attributes: ['id', 'name', 'image', ],
@@ -27,17 +28,26 @@ class RecipeModel extends ModelCrud{
                         }
                     }]
                 })
-                if(recipeIdBd.length > 0){
-                    return res.send(recipeIdBd)
+                if(recipeIdBd){
+                    res.json(recipeIdBd)
                 }else{
-                    res.status(404).send('La receta no existe en la base de datos')
+                    res.status(404).json({message: 'La receta no existe en la Base de datos'})
                 }
             }
-        } catch (error) {
-            next(error)
-        }
+            else if(!isNaN(id)){
+                let recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`)
+                let obj = {}// la info me llega en un obj y no en un arr, por eso hago esto.
+                obj = {
+                    name: recipeIdApi.data.title,
+                    id: recipeIdApi.data.id,
+                    image: recipeIdApi.data.image
+                }
+                    res.json(obj)
+            }
+        } catch (error) { 
+           next(error)
     }
-
+}                                        //By Name
     getAll = async (req, res, next) =>{
         if(req.query.name){
             const name = req.query.name.toLowerCase()
@@ -54,8 +64,8 @@ class RecipeModel extends ModelCrud{
                         attributes: ['name'],
                            //Aquí vinculo mis diets a mi búsqueda por query
                 }] 
-                })
-                
+            })
+          
                 let mapClear = queryBdd.map(el => {
                     return{
                         id: el.id,
@@ -65,7 +75,7 @@ class RecipeModel extends ModelCrud{
                 })
                 let results = [...mapClear]
 
-                                        //Acá la peticiona la api en primera instancia
+                                            //   API  
 
                 let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&apiKey=${API_KEY}`)
                 let mapClearApiArray = queryApi.data.results.map(el =>{
@@ -81,8 +91,8 @@ class RecipeModel extends ModelCrud{
                 next(error)
             }
         }
-    }
-
+    }                                   // Post & validation
+ 
     post = async (req, res, next) => {
         let {name, summary, healthScore, steps, image, diets} = req.body;
 
