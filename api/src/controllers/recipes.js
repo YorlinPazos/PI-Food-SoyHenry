@@ -29,28 +29,44 @@ class RecipeModel extends ModelCrud{
                     }]
                 })
                 if(recipeIdBd){
-                    res.json(recipeIdBd)
+                    res.status(200)
+                       .json({
+                        data: recipeIdBd,
+                        message: 'Se encontró esta receta'
+                    })
                 }else{
                     res.status(404).json({message: 'La receta no existe en la Base de datos'})
                 }
             }
-            else if(!isNaN(id)){
-                let recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`)
-                let obj = {}// la info me llega en un obj y no en un arr, por eso hago esto.
-                obj = {
-                    name: recipeIdApi.data.title,
-                    id: recipeIdApi.data.id,
-                    image: recipeIdApi.data.image
-                }
-                    res.json(obj)
-            }
-        } catch (error) { 
-           next(error)
+
+        else if(!isNaN(id)) {
+                let obj = {};
+                 let recipeIdApi;
+
+        try {
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`);
+            obj = {
+                name: recipeIdApi.data.title,
+                id: recipeIdApi.data.id,
+                image: recipeIdApi.data.image
+            };
+                res.status(200).json({
+                    data: obj,
+                    message: 'Se encontró esta receta'
+                });
+
+        } catch (error) { //catch propio de la parte de API para no obstruir el handler de la app 
+            res.status(404).json({ message: 'La receta no existe en la API externa' });
+        }
     }
-}                                        //By Name
+    } catch (error) {
+    next(error);
+    }
+}   
+                                           //By Name
     getAll = async (req, res, next) =>{
         if(req.query.name){
-            const name = req.query.name.toLowerCase()
+            const name = req.query.name;
             try {
                 let queryBdd = await this.model.findAll({
                     attributes:['id', 'name', 'createdInDb'],
@@ -66,27 +82,41 @@ class RecipeModel extends ModelCrud{
                 }] 
             })
           
-                let mapClear = queryBdd.map(el => {
+                let mapClearDB = queryBdd.map(el => {
                     return{
                         id: el.id,
                         name: el.name,
                         diets: el.diets.map(el => el.name).join(', ')
                     }
                 })
-                let results = [...mapClear]
+                let results = [...mapClearDB]
 
                                             //   API  
 
-                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&apiKey=${API_KEY}`)
-                let mapClearApiArray = queryApi.data.results.map(el =>{
-                    return{
-                        id: el.id,
-                        name: el.title,
-                        diets: el.diets.map(el => el).join(', ')
-                    }
-                })
-                results =[...mapClear, mapClearApiArray]
-                res.status(200).send(results)
+                // let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?query=${name}&addRecipeInformation=true&apiKey=${API_KEY}`)
+                // let mapClearApiArray = queryApi.data.results.map(el =>{
+                //     return{
+                //         id: el.id,
+                //         name: el.title,
+                //         diets: el.diets.map(el => el).join(', ')
+                //     }
+                // })
+                // results =[...mapClear, mapClearApiArray]
+                // res.status(200).send(results)
+
+                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?addRecipeInformation=true&apiKey=${API_KEY}`)
+                let filterResult = queryApi.data.results.filter(el => el.title.toLowerCase().includes(name.toLowerCase()))
+                  console.log(filterResult)
+             
+                    let mapClearApi = await filterResult.map(el => {
+                        return{
+                            id: el.id,
+                            name: el.title,
+                            diets: el.diets.map(el => el).join(', ')
+                        }
+                    })
+                    results = [...mapClearDB, mapClearApi]
+                   res.status(200).send(results);
             } catch (error) {
                 next(error)
             }
