@@ -11,7 +11,8 @@ class ModelCrud {
         return this.model.findAll()
         .then((results) => res.send(results))
         .catch((error)=>next(error))
-    }                                       
+    }      
+                                     
     getById = (req, res, next) => {
         const id = req.params.id;
         return this.model.findByPk(id)

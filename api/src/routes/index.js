@@ -5,6 +5,7 @@ const router = Router();
 
 const recipeRoutes = require("./recipes")
 const dietRoutes = require("./diets")
+const nameRoutes = require("./name")
 
 
 // Configurar los routers
@@ -12,6 +13,6 @@ const dietRoutes = require("./diets")
 
 router.use("/recipes", recipeRoutes);
 router.use("/diets", dietRoutes);
-
+router.use("/name", nameRoutes)
 
 module.exports = router;
