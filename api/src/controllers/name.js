@@ -7,7 +7,7 @@ const { Op  } = require('sequelize')
 class RecipeModel extends ModelCrud{
     constructor(model){
         super(model)
-    }
+    }                                          //Search By name 
     getAll = async (req, res, next) =>{
         try {
             const name = req.query.name;
@@ -30,8 +30,7 @@ class RecipeModel extends ModelCrud{
                        name: el.name,           //Limpio un poco los results
                        diets: el.diets.map(el => el.name).join(', ')
                        }
-                    })    
-                    
+                    })     
                                               //  API
 
                 let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY2}&addRecipeInformation=true&number=100`)
@@ -69,4 +68,3 @@ class RecipeModel extends ModelCrud{
 const nameController = new RecipeModel(Recipe);
 
 module.exports = nameController;
-
