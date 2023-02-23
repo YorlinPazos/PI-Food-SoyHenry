@@ -43,7 +43,7 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY2}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
@@ -68,7 +68,7 @@ class RecipeModel extends ModelCrud{
         try {
 
             let getRecDb = await this.model.findAll({
-                attributes: ['id', 'name', 'image'],
+                attributes: ['id', 'name', 'image', 'createdInDb'],
                 include: [{
                     model: Diet,
                     attributes: ['name'],
@@ -82,19 +82,21 @@ class RecipeModel extends ModelCrud{
                return{
                 name: el.name,
                 id: el.id,
-                image: el.image
+                image: el.image,
+                diets: el.diets.map(el => el.name).join(', '), 
                }
             });
 
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY2}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,
                     id: el.id,
-                    image: el.image
+                    image: el.image,
+                    diets: el.diets.map(el => el).join(', ')
                 }
             });
             results = [...results, ...recipesMapApi]
