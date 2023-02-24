@@ -1,7 +1,7 @@
 const ModelCrud = require("./index");
 const axios = require('axios');
 const { Recipe, Diet } = require('../db');
-const { API_KEY,API_KEY2 } = process.env;
+const { API_KEY,API_KEY2,API_KEY3,API_KEY4 } = process.env;
 
 
 class RecipeModel extends ModelCrud{
@@ -43,7 +43,7 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY2}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
@@ -83,14 +83,14 @@ class RecipeModel extends ModelCrud{
                 name: el.name,
                 id: el.id,
                 image: el.image,
-                diets: el.diets.map(el => el.name).join(', '), 
+                diets: el.diets.map(el => el.name).join(', ')
                }
             });
 
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY2}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,

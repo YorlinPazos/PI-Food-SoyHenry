@@ -17,18 +17,18 @@ export function getRecipes(){
 }
 
 
+
+export function getDiets(){
+    return async function(dispatch){
+        var info = await axios.get("http://localhost:3001/diets",{})
+        return dispatch({type: GET_DIETS, payload: info.data})
+    }
+}
+
+
 export function filterDiet(payload){                   //load...
     return {
         type: FILTER_DIETS,
         payload
-    }
-}
-
-export function getDiets(){
-    return async function(dispatch){
-        var info = await axios.get("http://localhost:3001/diets",{            //ok
-
-        })
-        return dispatch({type: GET_DIETS, payload: info.data})
     }
 }

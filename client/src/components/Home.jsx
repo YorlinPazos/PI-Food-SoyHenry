@@ -43,8 +43,9 @@ export default function Home (){
 
     //filtro por diets
     function handleDietFilter(e) {
-        e.preventDefault();
+        // e.preventDefault();
         dispatch(filterDiet(e.target.value));
+        setCurrentPage(1)
       }
     
 

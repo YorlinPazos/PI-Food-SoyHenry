@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { Recipe,Diet } = require('../db');
 const ModelCrud = require("./index"); 
-const { API_KEY,API_KEY2 } = process.env;
+const { API_KEY,API_KEY2,API_KEY3,API_KEY4 } = process.env;
 const { Op  } = require('sequelize')
 
 class RecipeModel extends ModelCrud{
@@ -33,7 +33,7 @@ class RecipeModel extends ModelCrud{
                     })     
                                               //  API
 
-                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&addRecipeInformation=true&number=100`)
+                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY2}&addRecipeInformation=true&number=100`)
                 let filterResult = queryApi.data.results.filter(el => el.title.toLowerCase().includes(name.toLowerCase()))
              
                     let mapClearApi = await filterResult.map(el => {
