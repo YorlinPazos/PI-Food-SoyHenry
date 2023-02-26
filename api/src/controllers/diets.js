@@ -24,7 +24,7 @@ class DietModel extends ModelCrud{
 
                     // si hay info la retorno, si no sigo con la api.
 
-                    let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY4}`)
+                    let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY2}`)
                     let dietsRes = response.data.results.map(el => el.diets)
                     //Aplano con flat y creo un arr unidimensional.
                     let dietsFlat = dietsRes.flat()

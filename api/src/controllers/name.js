@@ -33,7 +33,7 @@ class RecipeModel extends ModelCrud{
                     })     
                                               //  API
 
-                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY4}&addRecipeInformation=true&number=100`)
+                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY2}&addRecipeInformation=true&number=100`)
                 let filterResult = queryApi.data.results.filter(el => el.title.toLowerCase().includes(name.toLowerCase()))
              
                     let mapClearApi = await filterResult.map(el => {

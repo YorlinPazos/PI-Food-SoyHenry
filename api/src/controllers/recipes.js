@@ -28,6 +28,11 @@ class RecipeModel extends ModelCrud{
                         }
                     }]
                 })
+
+                recipeIdBd = JSON.stringify(recipeIdBd);
+                recipeIdBd = JSON.parse(recipeIdBd);
+                recipeIdBd.diets = recipeIdBd.diets.map(r => r.name).join(', ');
+
                 if(recipeIdBd){
                     res.status(200)
                        .json({
@@ -43,11 +48,12 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY4}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY2}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
-                image: recipeIdApi.data.image
+                image: recipeIdApi.data.image,
+                diets: recipeIdApi.data.diets.map(el => el).join(', ')
             };
                 res.status(200).json({
                     data: obj,
@@ -68,7 +74,7 @@ class RecipeModel extends ModelCrud{
         try {
 
             let getRecDb = await this.model.findAll({
-                attributes: ['id', 'name', 'image', 'createdInDb'],
+                attributes: ['id', 'name', 'image', 'createdInDb', 'healthScore'],
                 include: [{
                     model: Diet,
                     attributes: ['name'],
@@ -84,6 +90,7 @@ class RecipeModel extends ModelCrud{
                 id: el.id,
                 image: el.image,
                 diets: el.diets.map(el => el.name).join(', '),
+                healthScore: el.healthScore,
                 createdInDb: el.createdInDb
                }
             });
@@ -91,14 +98,14 @@ class RecipeModel extends ModelCrud{
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY4}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY2}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,
                     id: el.id,
                     image: el.image,
                     diets: el.diets.map(el => el).join(', '),
-                    createdInDb: false
+                    healthScore: el.healthScore
                 }
             });
             results = [...results, ...recipesMapApi]
@@ -114,6 +121,7 @@ class RecipeModel extends ModelCrud{
     post = async (req, res, next) => {
         let {name, summary, healthScore, steps, image, diets} = req.body;
 
+        if(req.body.healthScore < 0 || healthScore > 100) return res.status(400).json({message: 'El healthScore debe ser un numero entre 0 y 100. EJEMPLO: 74.5'})
         if(!req.body.name ) return res.status(400).json({message: 'El campo >| name |< es obligatorio'})
         if(!req.body.summary ) return res.status(400).json({message: 'El campo >| summary |< es obligatorio'})
         if(typeof req.body.healthScore != 'number' ) return res.status(400).json({message: 'El campo >| healthScore |< debería ser un número'})
