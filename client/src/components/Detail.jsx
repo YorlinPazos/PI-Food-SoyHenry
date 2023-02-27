@@ -15,13 +15,16 @@ export default function Detail(){
     }, [dispatch, id])
 
 
-    const myRecipe = useSelector((state) => state.detail)// me traigo mi estado del reducer.
-
+    const myRecipe = useSelector((state) => state.detail)
 return (
     <div>
             <div>
                 <h1>{myRecipe.name}</h1>
                 <img src={myRecipe.image} alt="" width="500px" height="700px" />
+                <p>Resúmen:{myRecipe.summary}</p>
+                <h3>{myRecipe.healthScore}</h3>
+                {/* <h3>{myRecipe.diets}</h3> */}
+                {/* <p>{myRecipe.steps}</p> */}
             </div>
         <Link to='/home'>
             <button>Go Back</button>
@@ -29,5 +32,9 @@ return (
     </div>
 )
 }
+
+
+
+
 
 

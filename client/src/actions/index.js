@@ -76,12 +76,18 @@ export function getNameRecipes(name){
 
 export function getDetail(id){
     return async function (dispatch){
-        var data = await axios.get("http://localhost:3001/recipes/" + id)  
-        
+        try {
+        var json = await axios.get("http://localhost:3001/recipes/" + id)  
+
         return dispatch ({
             type: GET_DETAILS,
-            payload: data.data
-        })
+            payload: json.data
+            })
+        } catch (error) {
+         console.log(error)   
+    }
+
+
     }
 }
 

@@ -16,7 +16,7 @@ class RecipeModel extends ModelCrud{
         try {
             if(isNaN(id)){
                 let recipeIdBd = await this.model.findOne({
-                    attributes: ['id', 'name', 'image', ],
+                    attributes: ['id', 'name', 'image','summary', 'healthScore'],
                     where: {
                         id: id
                     },
@@ -35,10 +35,7 @@ class RecipeModel extends ModelCrud{
 
                 if(recipeIdBd){
                     res.status(200)
-                       .json({
-                        data: recipeIdBd,
-                        message: 'Se encontró esta receta'
-                    })
+                       .send(recipeIdBd)
                 }else{
                     res.status(404).json({message: 'La receta no existe en la Base de datos'})
                 }
@@ -48,17 +45,16 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY2}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY4}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
                 image: recipeIdApi.data.image,
+                summary: recipeIdApi.data.summary,
+                healthScore: recipeIdApi.data.healthScore,
                 diets: recipeIdApi.data.diets.map(el => el).join(', ')
             };
-                res.status(200).json({
-                    data: obj,
-                    message: 'Se encontró esta receta'
-                });
+                res.status(200).json(obj)
 
         } catch (error) { //catch propio de la parte de API para no obstruir el handler de la app 
             res.status(404).json({ message: 'La receta no existe en la API externa' });
@@ -98,7 +94,7 @@ class RecipeModel extends ModelCrud{
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY2}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY4}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,
