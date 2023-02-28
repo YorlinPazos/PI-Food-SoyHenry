@@ -14,27 +14,35 @@ export default function Detail(){
         dispatch(getDetail(id));
     }, [dispatch, id])
 
+    const myRecipe = useSelector((state) => state.detail)//traigo mi estado.
 
-    const myRecipe = useSelector((state) => state.detail)
-return (
-    <div>
+
+    // Aquí me deshago de las etiquetas del resúmen
+    const summary = myRecipe.summary ? myRecipe.summary.replace(/(<([^>]+)>)/gi, "") : "";
+
+    return (
+        <div>
             <div>
-                <h1>{myRecipe.name}</h1>
-                <img src={myRecipe.image} alt="" width="500px" height="700px" />
-                <p>Resúmen:{myRecipe.summary}</p>
-                <h3>{myRecipe.healthScore}</h3>
-                {/* <h3>{myRecipe.diets}</h3> */}
-                {/* <p>{myRecipe.steps}</p> */}
-            </div>
-        <Link to='/home'>
-            <button>Go Back</button>
-        </Link>
-    </div>
-)
+                <h3>
+                    <h1>Nombre: </h1>{myRecipe.name}
+                </h3>
+                <img src={myRecipe.image} alt="" width="300px" height="350px" />
+                <p>
+                    <h2>Resúmen: </h2>{summary}
+                </p>
+                <h3>HealthScore: {myRecipe.healthScore}</h3>
+                <h3><h2>Tipos de dieta: </h2>{myRecipe.diets}</h3> 
+                <h2>Paso a paso: </h2>   
+                {Array.isArray(myRecipe.steps) ? //es un arr?
+                <div>
+                 {myRecipe.steps.map((step) => (   //renderiza cada paso en una <p>, con divs : renderiza la string 
+                 <p>{step.step}</p>
+                                              ))}
+                </div> : <p>{myRecipe.steps}</p>}
+            </div> 
+            <Link to='/home'>
+                <button>Go Back</button>
+            </Link>
+        </div>
+    )
 }
-
-
-
-
-
-

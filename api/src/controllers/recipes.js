@@ -1,7 +1,7 @@
 const ModelCrud = require("./index");
 const axios = require('axios');
 const { Recipe, Diet } = require('../db');
-const { API_KEY,API_KEY2,API_KEY3,API_KEY4 } = process.env;
+const { API_KEY,API_KEY2,API_KEY3,API_KEY4,API_KEY5,API_KEY6,API_KEY7 } = process.env;
 
 
 class RecipeModel extends ModelCrud{
@@ -16,7 +16,7 @@ class RecipeModel extends ModelCrud{
         try {
             if(isNaN(id)){
                 let recipeIdBd = await this.model.findOne({
-                    attributes: ['id', 'name', 'image','summary', 'healthScore'],
+                    attributes: ['id', 'name', 'image','summary', 'healthScore', 'steps'],
                     where: {
                         id: id
                     },
@@ -45,14 +45,17 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY4}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY7}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
                 image: recipeIdApi.data.image,
                 summary: recipeIdApi.data.summary,
                 healthScore: recipeIdApi.data.healthScore,
-                diets: recipeIdApi.data.diets.map(el => el).join(', ')
+                diets: recipeIdApi.data.diets.map(el => el).join(', '),
+                steps: recipeIdApi.data.analyzedInstructions[0]?.steps.map((el) => {
+                    return {number: el.number,step: el.step,}
+                })
             };
                 res.status(200).json(obj)
 
@@ -86,15 +89,14 @@ class RecipeModel extends ModelCrud{
                 id: el.id,
                 image: el.image,
                 diets: el.diets.map(el => el.name).join(', '),
-                healthScore: el.healthScore,
-                createdInDb: el.createdInDb
+                healthScore: el.healthScore
                }
             });
 
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY4}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY7}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,
