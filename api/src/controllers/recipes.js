@@ -45,7 +45,7 @@ class RecipeModel extends ModelCrud{
                 let obj = {};
                  let recipeIdApi;
         try {
-            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY7}`);
+            recipeIdApi = await axios.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY4}`);
             obj = {
                 name: recipeIdApi.data.title,
                 id: recipeIdApi.data.id,
@@ -96,7 +96,7 @@ class RecipeModel extends ModelCrud{
             let results = [...mapGetAllClear]
 
 
-            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY7}`)
+            let response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?&addRecipeInformation=true&number=100&apiKey=${API_KEY4}`)
             let recipesMapApi = response.data.results.map(el =>{
                 return{
                     name: el.title,
@@ -119,11 +119,11 @@ class RecipeModel extends ModelCrud{
     post = async (req, res, next) => {
         let {name, summary, healthScore, steps, image, diets} = req.body;
 
-        if(req.body.healthScore < 0 || healthScore > 100) return res.status(400).json({message: 'El healthScore debe ser un numero entre 0 y 100. EJEMPLO: 74.5'})
-        if(!req.body.name ) return res.status(400).json({message: 'El campo >| name |< es obligatorio'})
-        if(!req.body.summary ) return res.status(400).json({message: 'El campo >| summary |< es obligatorio'})
-        if(typeof req.body.healthScore != 'number' ) return res.status(400).json({message: 'El campo >| healthScore |< debería ser un número'})
-
+       
+        if(!name ) return res.status(400).json({message: 'El campo >| name |< es obligatorio'})
+        if(!summary ) return res.status(400).json({message: 'El campo >| summary |< es obligatorio'})
+        if(typeof healthScore != 'number' && typeof healthScore != 'string' ) return res.status(400).json({message: 'El campo >| healthScore |< debería ser un número'})
+        if(healthScore < 0 || healthScore > 100) return res.status(400).json({message: 'El healthScore debe ser un numero entre 0 y 100. EJEMPLO: 74.5'})
         try {
             let createRecipe = await this.model.create({
                 name,
@@ -142,7 +142,6 @@ class RecipeModel extends ModelCrud{
                 data: createRecipe,
                 message: 'La receta ha sido creada con éxito'
             })
-
         } catch (error) {
         next(error)           
         }

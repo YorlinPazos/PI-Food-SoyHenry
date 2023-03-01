@@ -1,6 +1,6 @@
 import { GET_RECIPES, GET_DIETS, FILTER_DIETS,
     FILTER_CREATED, ORDER_BY_NAME,ORDER_BY_HEALTHSCORE,
-    GET_BY_NAME, GET_DETAILS } from '../actionTypes'
+    GET_BY_NAME, GET_DETAILS, CREATE_RECIPE } from '../actionTypes'
 
 
 
@@ -111,6 +111,11 @@ function rootReducer (state = initialState, action){
                         ...state,
                         detail: action.payload
                     }
+
+        case CREATE_RECIPE:
+                    return{
+                        ...state
+                    }            
 
         default:
              return state;

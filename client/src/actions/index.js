@@ -91,3 +91,11 @@ export function getDetail(id){
     }
 }
 
+
+export function postRecipe(payload){
+    return async function(dispatch){
+        var response = await axios.post("http://localhost:3001/recipes", payload)  //ok
+        return response;
+    }
+}
+

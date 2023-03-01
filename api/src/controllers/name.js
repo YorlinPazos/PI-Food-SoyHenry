@@ -13,7 +13,7 @@ class RecipeModel extends ModelCrud{
             const name = req.query.name;
             if(req.query.name){
                 let queryBdd = await this.model.findAll({
-                  attributes:['id', 'name', 'createdInDb'],
+                  attributes:['id', 'name', 'createdInDb','healthScore', "image"],
                   where:{
                      name : {
                              [Op.iLike]: `%${name}%`  
@@ -28,19 +28,23 @@ class RecipeModel extends ModelCrud{
                 return{
                        id: el.id,
                        name: el.name,           //Limpio un poco los results
-                       diets: el.diets.map(el => el.name).join(', ')
+                       diets: el.diets.map(el => el.name).join(', '),
+                       healthScore: el.healthScore,
+                       image: el.image
                        }
                     })     
                                               //  API
 
-                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY7}&addRecipeInformation=true&number=100`)
+                let queryApi = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY4}&addRecipeInformation=true&number=100`)
                 let filterResult = queryApi.data.results.filter(el => el.title.toLowerCase().includes(name.toLowerCase()))
              
                     let mapClearApi = await filterResult.map(el => {
                         return{
                             id: el.id,
                             name: el.title,
-                            diets: el.diets.map(el => el).join(', ')
+                            diets: el.diets.map(el => el).join(', '),
+                            healthScore: el.healthScore,
+                            image: el.image
                         }
                     })
                    let results = [...mapClearDB, ...mapClearApi]
